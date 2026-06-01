@@ -158,6 +158,15 @@
   .datasrc b{color:var(--ink)}
   .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:12px 22px;border-radius:11px;font-size:14px;font-weight:500;opacity:0;pointer-events:none;transition:.25s;z-index:50}
   .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+  /* ===== TABS ===== */
+  .tabs-nav{display:flex;gap:4px;margin-top:22px;border-bottom:2px solid var(--line);padding-bottom:0}
+  .tab-btn{font-family:'Archivo';font-size:14px;font-weight:600;color:var(--muted);background:none;border:none;border-radius:10px 10px 0 0;padding:11px 22px;cursor:pointer;position:relative;bottom:-2px;border:2px solid transparent;border-bottom:none;transition:color .15s,background .15s}
+  .tab-btn:hover{color:var(--ink);background:var(--accent-soft)}
+  .tab-btn.active{color:var(--accent);background:var(--card);border-color:var(--line);border-bottom-color:var(--card)}
+  .tab-btn svg{vertical-align:-3px;margin-right:7px}
+  .tab-pane{display:none;padding-top:22px}
+  .tab-pane.active{display:block}
 </style>
 </head>
 <body>
@@ -170,116 +179,133 @@
     <span class="status-dot" id="srcStatus">Conectando a Firebase…</span>
   </header>
 
-  <section class="period">
-    <div class="period-nav">
-      <button class="pn-btn" id="prevWeek" title="Semana anterior">‹</button>
-      <div class="period-label">
-        <span class="pl-main" id="periodMain">Esta semana</span>
-        <span class="pl-sub" id="periodSub"></span>
-      </div>
-      <button class="pn-btn" id="nextWeek" title="Semana siguiente">›</button>
-    </div>
-    <div class="period-modes">
-      <button class="pm-btn sel" data-mode="week">Semana</button>
-      <button class="pm-btn" data-mode="all">Todo</button>
-      <button class="pm-btn" data-mode="range">Rango…</button>
-    </div>
-    <div class="period-range" id="rangeBox">
-      <input type="date" id="rangeFrom"><span class="rg-sep">→</span><input type="date" id="rangeTo">
-      <button class="btn-ghost" id="applyRange" style="padding:8px 14px">Aplicar</button>
-    </div>
-  </section>
+  <nav class="tabs-nav">
+    <button class="tab-btn active" data-tab="registro">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+      Registro
+    </button>
+    <button class="tab-btn" data-tab="dashboard">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+      Dashboard
+    </button>
+  </nav>
 
-  <section class="kpis">
-    <div class="kpi"><div class="label">Horas registradas</div><div class="value" id="kHoras">0<small> h</small></div><div class="spark"><i id="sparkHoras" style="width:0%"></i></div></div>
-    <div class="kpi"><div class="label">Actividades</div><div class="value" id="kAct">0</div><div class="spark"><i id="sparkAct" style="width:0%"></i></div></div>
-    <div class="kpi"><div class="label">Días con registro</div><div class="value" id="kDias">0</div><div class="spark"><i id="sparkDias" style="width:0%"></i></div></div>
-    <div class="kpi"><div class="label">Prom. horas / día</div><div class="value" id="kProm">0<small> h</small></div><div class="spark"><i id="sparkProm" style="width:0%"></i></div></div>
-  </section>
+  <!-- ===== PESTAÑA: REGISTRO ===== -->
+  <div class="tab-pane active" id="tab-registro">
+    <div class="grid">
+      <section class="panel">
+        <div class="ph"><h2>Nueva actividad</h2></div>
+        <p class="sub">La duración se calcula automáticamente a partir de las horas.</p>
+        <div class="body">
+          <form id="actForm" autocomplete="off">
+            <div class="field"><label for="fecha">Fecha</label><input type="date" id="fecha" required></div>
+            <div class="field"><label for="estado">Estado</label><select id="estado"></select></div>
+            <div class="field"><label>Hora inicio</label>
+              <button type="button" class="time-btn" id="inicioBtn" data-target="inicio"><span>Seleccionar…</span><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></button>
+              <input type="hidden" id="inicio">
+            </div>
+            <div class="field"><label>Hora fin</label>
+              <button type="button" class="time-btn" id="finBtn" data-target="fin"><span>Seleccionar…</span><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></button>
+              <input type="hidden" id="fin">
+            </div>
+            <div class="field full"><label for="actividad">Actividad</label><textarea id="actividad" placeholder="Describe el bloque de trabajo…" required></textarea></div>
+            <div class="field"><label for="area">Área</label><select id="area"></select></div>
+            <div class="field"><label for="categoria">Categoría</label><select id="categoria"></select></div>
+            <div class="field full"><span class="dur-hint" id="durHint"></span></div>
+            <div class="actions">
+              <button type="submit" class="btn-primary" id="submitBtn">Agregar actividad</button>
+              <button type="button" class="btn-ghost" id="cancelEdit" style="display:none">Cancelar edición</button>
+            </div>
+          </form>
+        </div>
+      </section>
 
-  <section class="dash">
-    <div class="panel">
-      <div class="ph"><h2>Horas por día</h2><span class="chip" id="trendChip">período</span></div>
-      <p class="sub">Horas trabajadas por día en el período (excluye almuerzo).</p>
-      <div class="body trend-wrap">
-        <svg class="trend" id="trendSvg" viewBox="0 0 720 210" preserveAspectRatio="none"></svg>
-        <div class="tip" id="trendTip"></div>
-      </div>
+      <section class="panel">
+        <div class="ph"><h2>Por estado</h2></div>
+        <p class="sub">Actividades según su estado.</p>
+        <div class="body"><div id="byEstado"></div></div>
+      </section>
     </div>
-    <div class="panel">
-      <div class="ph"><h2>Distribución</h2></div>
-      <p class="sub">Horas por categoría y por área.</p>
-      <div class="body">
-        <div class="seg-title">Por categoría</div>
-        <div id="byCat"></div>
-        <div class="seg-title" style="margin-top:18px">Por área</div>
-        <div id="byArea"></div>
-      </div>
-    </div>
-  </section>
 
-  <div class="grid">
-    <section class="panel">
-      <div class="ph"><h2>Nueva actividad</h2></div>
-      <p class="sub">La duración se calcula automáticamente a partir de las horas.</p>
-      <div class="body">
-        <form id="actForm" autocomplete="off">
-          <div class="field"><label for="fecha">Fecha</label><input type="date" id="fecha" required></div>
-          <div class="field"><label for="estado">Estado</label><select id="estado"></select></div>
-          <div class="field"><label>Hora inicio</label>
-            <button type="button" class="time-btn" id="inicioBtn" data-target="inicio"><span>Seleccionar…</span><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></button>
-            <input type="hidden" id="inicio">
-          </div>
-          <div class="field"><label>Hora fin</label>
-            <button type="button" class="time-btn" id="finBtn" data-target="fin"><span>Seleccionar…</span><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></button>
-            <input type="hidden" id="fin">
-          </div>
-          <div class="field full"><label for="actividad">Actividad</label><textarea id="actividad" placeholder="Describe el bloque de trabajo…" required></textarea></div>
-          <div class="field"><label for="area">Área</label><select id="area"></select></div>
-          <div class="field"><label for="categoria">Categoría</label><select id="categoria"></select></div>
-          <div class="field full"><span class="dur-hint" id="durHint"></span></div>
-          <div class="actions">
-            <button type="submit" class="btn-primary" id="submitBtn">Agregar actividad</button>
-            <button type="button" class="btn-ghost" id="cancelEdit" style="display:none">Cancelar edición</button>
-          </div>
-        </form>
+    <section class="panel table-panel">
+      <div class="toolbar">
+        <input type="search" id="search" placeholder="Buscar actividad…">
+        <select id="filterArea"><option value="">Todas las áreas</option></select>
+        <select id="filterCat"><option value="">Todas las categorías</option></select>
+        <div class="spacer"></div>
+        <span class="count-pill" id="countPill">0 actividades</span>
+        <button class="btn-excel" id="exportBtn">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="m9 13 2 3 2-3"/></svg>
+          Exportar Excel
+        </button>
       </div>
-    </section>
-
-    <section class="panel">
-      <div class="ph"><h2>Por estado</h2></div>
-      <p class="sub">Actividades según su estado.</p>
-      <div class="body"><div id="byEstado"></div></div>
+      <div class="tbl-scroll">
+        <table>
+          <thead><tr>
+            <th>Fecha</th><th>Inicio</th><th>Fin</th><th>Dur.</th>
+            <th>Actividad</th><th>Área</th><th>Categoría</th><th>Estado</th><th></th>
+          </tr></thead>
+          <tbody id="tbody"></tbody>
+        </table>
+      </div>
+      <div class="empty" id="emptyState">Aún no hay actividades. Agrega la primera con el formulario de arriba.</div>
     </section>
   </div>
 
-  <section class="panel table-panel">
-    <div class="toolbar">
-      <input type="search" id="search" placeholder="Buscar actividad…">
-      <select id="filterArea"><option value="">Todas las áreas</option></select>
-      <select id="filterCat"><option value="">Todas las categorías</option></select>
-      <div class="spacer"></div>
-      <span class="count-pill" id="countPill">0 actividades</span>
-      <button class="btn-excel" id="exportBtn">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="m9 13 2 3 2-3"/></svg>
-        Exportar Excel
-      </button>
-    </div>
-    <div class="tbl-scroll">
-      <table>
-        <thead><tr>
-          <th>Fecha</th><th>Inicio</th><th>Fin</th><th>Dur.</th>
-          <th>Actividad</th><th>Área</th><th>Categoría</th><th>Estado</th><th></th>
-        </tr></thead>
-        <tbody id="tbody"></tbody>
-      </table>
-    </div>
-    <div class="empty" id="emptyState">Aún no hay actividades. Agrega la primera con el formulario de arriba.</div>
-  </section>
+  <!-- ===== PESTAÑA: DASHBOARD ===== -->
+  <div class="tab-pane" id="tab-dashboard">
+    <section class="period">
+      <div class="period-nav">
+        <button class="pn-btn" id="prevWeek" title="Semana anterior">‹</button>
+        <div class="period-label">
+          <span class="pl-main" id="periodMain">Esta semana</span>
+          <span class="pl-sub" id="periodSub"></span>
+        </div>
+        <button class="pn-btn" id="nextWeek" title="Semana siguiente">›</button>
+      </div>
+      <div class="period-modes">
+        <button class="pm-btn sel" data-mode="week">Semana</button>
+        <button class="pm-btn" data-mode="all">Todo</button>
+        <button class="pm-btn" data-mode="range">Rango…</button>
+      </div>
+      <div class="period-range" id="rangeBox">
+        <input type="date" id="rangeFrom"><span class="rg-sep">→</span><input type="date" id="rangeTo">
+        <button class="btn-ghost" id="applyRange" style="padding:8px 14px">Aplicar</button>
+      </div>
+    </section>
 
-  <div class="datasrc">
-    <span>🔥</span>
-    <div><b>Firebase Realtime Database activo.</b> Los datos se sincronizan en tiempo real entre todos los usuarios. Configura tu proyecto en <code>FIREBASE_CONFIG</code> al inicio del script.</div>
+    <section class="kpis">
+      <div class="kpi"><div class="label">Horas registradas</div><div class="value" id="kHoras">0<small> h</small></div><div class="spark"><i id="sparkHoras" style="width:0%"></i></div></div>
+      <div class="kpi"><div class="label">Actividades</div><div class="value" id="kAct">0</div><div class="spark"><i id="sparkAct" style="width:0%"></i></div></div>
+      <div class="kpi"><div class="label">Días con registro</div><div class="value" id="kDias">0</div><div class="spark"><i id="sparkDias" style="width:0%"></i></div></div>
+      <div class="kpi"><div class="label">Prom. horas / día</div><div class="value" id="kProm">0<small> h</small></div><div class="spark"><i id="sparkProm" style="width:0%"></i></div></div>
+    </section>
+
+    <section class="dash">
+      <div class="panel">
+        <div class="ph"><h2>Horas por día</h2><span class="chip" id="trendChip">período</span></div>
+        <p class="sub">Horas trabajadas por día en el período.</p>
+        <div class="body trend-wrap">
+          <svg class="trend" id="trendSvg" viewBox="0 0 720 210" preserveAspectRatio="none"></svg>
+          <div class="tip" id="trendTip"></div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="ph"><h2>Distribución</h2></div>
+        <p class="sub">Horas por categoría y por área.</p>
+        <div class="body">
+          <div class="seg-title">Por categoría</div>
+          <div id="byCat"></div>
+          <div class="seg-title" style="margin-top:18px">Por área</div>
+          <div id="byArea"></div>
+        </div>
+      </div>
+    </section>
+
+    <div class="datasrc">
+      <span>🔥</span>
+      <div><b>Firebase Realtime Database activo.</b> Los datos se sincronizan en tiempo real entre todos los usuarios.</div>
+    </div>
   </div>
 </div>
 
@@ -825,6 +851,19 @@ $('#exportBtn').addEventListener('click',async ()=>{
   const stamp=new Date().toISOString().slice(0,10);
   a.download=`Registro_Actividades_${stamp}.xlsx`;a.click();
   toast('Excel exportado');
+});
+
+/* ===== LÓGICA DE PESTAÑAS ===== */
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const tab = btn.dataset.tab;
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('tab-' + tab).classList.add('active');
+    // Si se activa el dashboard, re-renderizar la gráfica de tendencia
+    if (tab === 'dashboard') renderTrend(current);
+  });
 });
 </script>
 </body>
