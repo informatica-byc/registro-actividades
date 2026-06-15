@@ -732,11 +732,6 @@ else window.addEventListener('firebase-ready',watchConnection,{once:true});
 
 let current=[];
 DataStore.onChange(data=>{current=data;render();});
-// Sincronización en tiempo real del Detalle de Horas: re-render si la pestaña está visible
-HoursStore.onChange(()=>{
-  const horasVisible=$('#tab-horas').style.display!=='none'||$('#tab-dashhoras').style.display!=='none';
-  if(horasVisible) renderHours();
-});
 updatePeriodUI();
 $('#search').addEventListener('input',render);
 $('#filterArea').addEventListener('change',render);
@@ -1074,6 +1069,12 @@ const HoursStore=(()=>{
     all(){ return {...cache}; }
   };
 })();
+
+// Sincronización en tiempo real del Detalle de Horas: re-render si la pestaña está visible
+HoursStore.onChange(()=>{
+  const horasVisible=$('#tab-horas').style.display!=='none'||$('#tab-dashhoras').style.display!=='none';
+  if(horasVisible) renderHours();
+});
 
 const FERIADOS_CR={'01-01':1,'04-02':1,'04-03':1,'04-11':1,'05-01':1,'07-25':1,'08-02':1,'08-15':1,'09-15':1,'12-01':1,'12-25':1};
 const MESES_FULL=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
