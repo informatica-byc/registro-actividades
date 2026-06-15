@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Registro de Actividades · ByC</title>
+<title>Registro de Infinity Corp</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Archivo:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -56,6 +56,7 @@
   .kpi{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px;box-shadow:var(--shadow);position:relative;overflow:hidden}
   .kpi::after{content:"";position:absolute;inset:0 auto 0 0;width:3px;background:linear-gradient(var(--accent),var(--accent-2))}
   .kpi .label{font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:600}
+  .kpi .label svg{width:12px;height:12px;vertical-align:-2px;margin-right:5px;opacity:.7}
   .kpi .value{font-family:'Fraunces',serif;font-size:32px;font-weight:600;margin-top:7px;letter-spacing:-.02em}
   .kpi .value small{font-size:14px;color:var(--muted);font-weight:500;font-family:'Archivo'}
   .kpi .spark{margin-top:8px;height:3px;border-radius:3px;background:var(--accent-soft);overflow:hidden}
@@ -124,6 +125,9 @@
   .actions{grid-column:1 / -1;display:flex;gap:10px;margin-top:2px}
   button{font-family:'Archivo';font-weight:600;font-size:14px;border:none;border-radius:10px;padding:10px 18px;cursor:pointer;transition:transform .08s,filter .15s}
   button:active{transform:translateY(1px)}
+  /* Accesibilidad: foco visible por teclado */
+  button:focus-visible,select:focus-visible,input:focus-visible,textarea:focus-visible,.tab:focus-visible,.time-btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  @media (prefers-reduced-motion: reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important}}
   .btn-primary{background:linear-gradient(var(--accent),var(--accent-2));color:#fff}
   .btn-primary:hover{filter:brightness(1.07)}
   .btn-ghost{background:transparent;color:var(--muted);border:1px solid var(--line)}
@@ -158,215 +162,294 @@
   .datasrc b{color:var(--ink)}
   .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:12px 22px;border-radius:11px;font-size:14px;font-weight:500;opacity:0;pointer-events:none;transition:.25s;z-index:50}
   .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-
-  /* ===== TABS ===== */
-  .tabs-nav{display:flex;gap:4px;margin-top:22px;border-bottom:2px solid var(--line);padding-bottom:0}
-  .tab-btn{font-family:'Archivo';font-size:14px;font-weight:600;color:var(--muted);background:none;border:none;border-radius:10px 10px 0 0;padding:11px 22px;cursor:pointer;position:relative;bottom:-2px;border:2px solid transparent;border-bottom:none;transition:color .15s,background .15s}
-  .tab-btn:hover{color:var(--ink);background:var(--accent-soft)}
-  .tab-btn.active{color:var(--accent);background:var(--card);border-color:var(--line);border-bottom-color:var(--card)}
-  .tab-btn svg{vertical-align:-3px;margin-right:7px}
-  .tab-pane{display:none;padding-top:22px}
-  .tab-pane.active{display:block}
+  /* tabs */
+  .tabs{display:flex;gap:6px;margin:18px 0 4px;border-bottom:1px solid var(--line)}
+  .tab{background:none;border:none;font-family:'Archivo';font-size:14.5px;font-weight:600;color:var(--muted);padding:11px 18px;border-radius:10px 10px 0 0;cursor:pointer;position:relative;top:1px;border-bottom:2px solid transparent}
+  .tab:hover{color:var(--ink)}
+  .tab.sel{color:var(--accent);border-bottom-color:var(--accent)}
+  .tab svg{width:15px;height:15px;vertical-align:-3px;margin-right:6px}
+  .ph h2 svg{width:17px;height:17px;vertical-align:-2px;margin-right:7px;color:var(--accent)}
+  .ico{display:inline-block;vertical-align:middle}
+  /* hours tab */
+  .hours-hint{font-size:13px;color:var(--muted);background:#f0ece1;border:1px dashed var(--line);border-radius:12px;padding:11px 16px;margin-bottom:18px}
+  .hours-hint b{color:var(--ink)}
+  .cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
+  @media(max-width:560px){
+    .tabs{overflow-x:auto;flex-wrap:nowrap;-webkit-overflow-scrolling:touch}
+    .tab{white-space:nowrap;flex:0 0 auto}
+    .cards-grid{grid-template-columns:1fr}
+    .wrap{padding:20px 14px 70px}
+    .brand h1{font-size:28px}
+  }
+  .daycard{background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);overflow:hidden;display:flex;flex-direction:column}
+  .daycard.weekend{opacity:.85}
+  .dc-head{display:flex;align-items:center;justify-content:space-between;padding:11px 14px 9px;border-bottom:1px solid var(--line)}
+  .dc-date{display:flex;flex-direction:column}
+  .dc-day{font-family:'Fraunces',serif;font-size:18px;font-weight:600;line-height:1}
+  .dc-dow{font-size:11.5px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-top:2px}
+  .dc-hours{font-family:'Fraunces',serif;font-size:20px;font-weight:600;color:var(--accent)}
+  .dc-hours small{font-family:'Archivo',sans-serif;font-size:11px;font-weight:600;color:var(--muted);margin-left:1px}
+  .dc-hours.zero{color:var(--line)}
+  .dc-body{padding:11px 14px 13px;display:flex;flex-direction:column;gap:9px}
+  .dc-estado{width:100%}
+  .dc-times{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .dc-times.hidden{display:none}
+  .dc-time{display:flex;flex-direction:column;gap:3px}
+  .dc-time label{font-size:10px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);font-weight:600}
+  .dc-time .time-btn{padding:7px 9px;font-size:13px;border-radius:8px}
+  .dc-estado select{font-family:'Archivo';font-size:13.5px;color:var(--ink);background:#fff;border:1px solid var(--line);border-radius:9px;padding:8px 10px;width:100%}
+  .dc-estado select:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+  .daycard.laborado{border-color:#bfe0cf}
+  .daycard.feriado .dc-head{background:#f7e9e3}
+  .daycard.noaplica{opacity:.7}
+  .daycard.sinmarcar{opacity:.55;border-style:dashed}
+  .daycard.sinmarcar .dc-day{color:var(--muted)}
+  .month-section-title{grid-column:1/-1;font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:600;margin:6px 0 -4px}
 </style>
 </head>
 <body>
 <div class="wrap">
   <header class="top">
     <div class="brand">
-      <span class="eyebrow">Corporación B&amp;C · TI</span>
-      <h1>Registro de <em>Actividades</em></h1>
+      <span class="eyebrow">Infinity Corp · TI</span>
+      <h1>Registro de <em>Infinity Corp</em></h1>
     </div>
-    <span class="status-dot" id="srcStatus">Conectando a Firebase…</span>
+    <span class="status-dot" id="srcStatus">Almacenamiento local (prototipo)</span>
   </header>
 
-  <nav class="tabs-nav">
-    <button class="tab-btn active" data-tab="registro">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
-      Registro
-    </button>
-    <button class="tab-btn" data-tab="dashboard">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-      Dashboard
-    </button>
+  <nav class="tabs">
+    <button class="tab sel" data-tab="actividades"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>Actividades</button>
+    <button class="tab" data-tab="dashact"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 14l3-4 3 3 4-6"/></svg>Dashboard Act.</button>
+    <button class="tab" data-tab="horas"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Horas</button>
+    <button class="tab" data-tab="dashhoras"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="4" height="9" rx="1"/><rect x="10" y="6" width="4" height="14" rx="1"/><rect x="17" y="3" width="4" height="17" rx="1"/></svg>Dashboard Horas</button>
   </nav>
 
-  <!-- ===== PESTAÑA: REGISTRO ===== -->
-  <div class="tab-pane active" id="tab-registro">
-    <div class="grid">
-      <section class="panel">
-        <div class="ph"><h2>Nueva actividad</h2></div>
-        <p class="sub">La duración se calcula automáticamente a partir de las horas.</p>
-        <div class="body">
-          <form id="actForm" autocomplete="off">
-            <div class="field"><label for="fecha">Fecha</label><input type="date" id="fecha" required></div>
-            <div class="field"><label for="estado">Estado</label><select id="estado"></select></div>
-            <div class="field"><label>Hora inicio</label>
-              <button type="button" class="time-btn" id="inicioBtn" data-target="inicio"><span>Seleccionar…</span><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></button>
-              <input type="hidden" id="inicio">
-            </div>
-            <div class="field"><label>Hora fin</label>
-              <button type="button" class="time-btn" id="finBtn" data-target="fin"><span>Seleccionar…</span><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></button>
-              <input type="hidden" id="fin">
-            </div>
-            <div class="field full"><label for="actividad">Actividad</label><textarea id="actividad" placeholder="Describe el bloque de trabajo…" required></textarea></div>
-            <div class="field"><label for="area">Área</label><select id="area"></select></div>
-            <div class="field"><label for="categoria">Categoría</label><select id="categoria"></select></div>
-            <div class="field full"><span class="dur-hint" id="durHint"></span></div>
-            <div class="actions">
-              <button type="submit" class="btn-primary" id="submitBtn">Agregar actividad</button>
-              <button type="button" class="btn-ghost" id="cancelEdit" style="display:none">Cancelar edición</button>
-            </div>
-          </form>
-        </div>
-      </section>
-
-      <section class="panel">
-        <div class="ph"><h2>Por estado</h2></div>
-        <p class="sub">Actividades según su estado.</p>
-        <div class="body"><div id="byEstado"></div></div>
-      </section>
-    </div>
-
-    <section class="panel table-panel">
-      <div class="toolbar">
-        <input type="search" id="search" placeholder="Buscar actividad…">
-        <select id="filterArea"><option value="">Todas las áreas</option></select>
-        <select id="filterCat"><option value="">Todas las categorías</option></select>
-        <div class="spacer"></div>
-        <span class="count-pill" id="countPill">0 actividades</span>
-        <button class="btn-excel" id="exportBtn">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="m9 13 2 3 2-3"/></svg>
-          Exportar Excel
-        </button>
+  <!-- ===================== TAB ACTIVIDADES (registro + historial) ===================== -->
+  <div class="tabpanel" id="tab-actividades">
+  <div class="grid">
+    <section class="panel">
+      <div class="ph"><h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>Nueva actividad</h2></div>
+      <p class="sub">La duración se calcula automáticamente a partir de las horas.</p>
+      <div class="body">
+        <form id="actForm" autocomplete="off">
+          <div class="field"><label for="fecha">Fecha</label><input type="date" id="fecha" required></div>
+          <div class="field"><label for="estado">Estado</label><select id="estado"></select></div>
+          <div class="field"><label>Hora inicio</label>
+            <button type="button" class="time-btn" id="inicioBtn" data-target="inicio"><span>Seleccionar…</span><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></button>
+            <input type="hidden" id="inicio">
+          </div>
+          <div class="field"><label>Inicio almuerzo <span style="text-transform:none;font-weight:400;color:#a8a290">(opcional)</span></label>
+            <button type="button" class="time-btn" id="almIniBtn" data-target="almIni"><span>Seleccionar…</span><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></button>
+            <input type="hidden" id="almIni">
+          </div>
+          <div class="field"><label>Fin almuerzo <span style="text-transform:none;font-weight:400;color:#a8a290">(opcional)</span></label>
+            <button type="button" class="time-btn" id="almFinBtn" data-target="almFin"><span>Seleccionar…</span><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></button>
+            <input type="hidden" id="almFin">
+          </div>
+          <div class="field"><label>Hora fin</label>
+            <button type="button" class="time-btn" id="finBtn" data-target="fin"><span>Seleccionar…</span><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></button>
+            <input type="hidden" id="fin">
+          </div>
+          <div class="field full"><label for="actividad">Actividad</label><textarea id="actividad" placeholder="Describe el bloque de trabajo…" required></textarea></div>
+          <div class="field"><label for="area">Área</label><select id="area"></select></div>
+          <div class="field"><label for="categoria">Categoría</label><select id="categoria"></select></div>
+          <div class="field full"><span class="dur-hint" id="durHint"></span></div>
+          <div class="actions">
+            <button type="submit" class="btn-primary" id="submitBtn">Agregar actividad</button>
+            <button type="button" class="btn-ghost" id="cancelEdit" style="display:none">Cancelar edición</button>
+          </div>
+        </form>
       </div>
-      <div class="tbl-scroll">
-        <table>
-          <thead><tr>
-            <th>Fecha</th><th>Inicio</th><th>Fin</th><th>Dur.</th>
-            <th>Actividad</th><th>Área</th><th>Categoría</th><th>Estado</th><th></th>
-          </tr></thead>
-          <tbody id="tbody"></tbody>
-        </table>
-      </div>
-      <div class="empty" id="emptyState">Aún no hay actividades. Agrega la primera con el formulario de arriba.</div>
+    </section>
+
+    <section class="panel">
+      <div class="ph"><h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>Resumen rápido</h2></div>
+      <p class="sub">Totales de todo el historial.</p>
+      <div class="body"><div id="quickSummary"></div></div>
     </section>
   </div>
 
-  <!-- ===== PESTAÑA: DASHBOARD ===== -->
-  <div class="tab-pane" id="tab-dashboard">
+  <section class="panel table-panel">
+    <div class="toolbar">
+      <input type="search" id="search" placeholder="Buscar actividad…">
+      <select id="filterArea"><option value="">Todas las áreas</option></select>
+      <select id="filterCat"><option value="">Todas las categorías</option></select>
+      <div class="spacer"></div>
+      <span class="count-pill" id="countPill">0 actividades</span>
+      <button class="btn-excel" id="exportBtn">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="m9 13 2 3 2-3"/></svg>
+        Exportar Excel
+      </button>
+    </div>
+    <div class="tbl-scroll">
+      <table>
+        <thead><tr>
+          <th>Fecha</th><th>Inicio</th><th>Inicio alm.</th><th>Fin alm.</th><th>Fin</th><th>Dur.</th>
+          <th>Actividad</th><th>Área</th><th>Categoría</th><th>Estado</th><th></th>
+        </tr></thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+    <div class="empty" id="emptyState">Aún no hay actividades. Agrega la primera con el formulario de arriba.</div>
+  </section>
+
+  <div class="datasrc">
+    <span>🔌</span>
+    <div><b>Listo para Firebase.</b> Este prototipo guarda los datos en tu navegador. Toda la lectura/escritura pasa por la capa <code>DataStore</code> al inicio del código — al conectar Firestore solo se reemplaza esa capa y la app pasa a tiempo real para todo el equipo, sin tocar la interfaz.</div>
+  </div>
+  </div><!-- /tab-actividades -->
+
+  <!-- ===================== TAB DASHBOARD ACTIVIDADES ===================== -->
+  <div class="tabpanel" id="tab-dashact" style="display:none">
+  <section class="period">
+    <div class="period-nav">
+      <button class="pn-btn" id="prevWeek" title="Semana anterior" aria-label="Semana anterior">‹</button>
+      <div class="period-label">
+        <span class="pl-main" id="periodMain">Esta semana</span>
+        <span class="pl-sub" id="periodSub"></span>
+      </div>
+      <button class="pn-btn" id="nextWeek" title="Semana siguiente" aria-label="Semana siguiente">›</button>
+    </div>
+    <div class="period-modes">
+      <button class="pm-btn sel" data-mode="week">Semana</button>
+      <button class="pm-btn" data-mode="all">Todo</button>
+      <button class="pm-btn" data-mode="range">Rango…</button>
+    </div>
+    <div class="period-range" id="rangeBox">
+      <input type="date" id="rangeFrom"><span class="rg-sep">→</span><input type="date" id="rangeTo">
+      <button class="btn-ghost" id="applyRange" style="padding:8px 14px">Aplicar</button>
+    </div>
+  </section>
+
+  <section class="kpis">
+    <div class="kpi"><div class="label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Horas registradas</div><div class="value" id="kHoras">0<small> h</small></div><div class="spark"><i id="sparkHoras" style="width:0%"></i></div></div>
+    <div class="kpi"><div class="label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>Actividades</div><div class="value" id="kAct">0</div><div class="spark"><i id="sparkAct" style="width:0%"></i></div></div>
+    <div class="kpi"><div class="label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>Días con registro</div><div class="value" id="kDias">0</div><div class="spark"><i id="sparkDias" style="width:0%"></i></div></div>
+    <div class="kpi"><div class="label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg>Prom. horas / día</div><div class="value" id="kProm">0<small> h</small></div><div class="spark"><i id="sparkProm" style="width:0%"></i></div></div>
+  </section>
+
+  <section class="dash">
+    <div class="panel">
+      <div class="ph"><h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M21 7v6h-6" /></svg>Horas por día</h2><span class="chip" id="trendChip">período</span></div>
+      <p class="sub">Horas trabajadas por día en el período (excluye almuerzo).</p>
+      <div class="body trend-wrap">
+        <svg class="trend" id="trendSvg" viewBox="0 0 720 210" preserveAspectRatio="none"></svg>
+        <div class="tip" id="trendTip"></div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="ph"><h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 1 0 10 10H12z"/><path d="M12 2v10h10A10 10 0 0 0 12 2z"/></svg>Distribución</h2></div>
+      <p class="sub">Horas por categoría y por área.</p>
+      <div class="body">
+        <div class="seg-title">Por categoría</div>
+        <div id="byCat"></div>
+        <div class="seg-title" style="margin-top:18px">Por área</div>
+        <div id="byArea"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel" style="margin-bottom:18px">
+    <div class="ph"><h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 22V4M4 4h13l-2 4 2 4H4"/></svg>Por estado</h2></div>
+    <p class="sub">Actividades según su estado en el período.</p>
+    <div class="body"><div id="byEstado"></div></div>
+  </section>
+  </div><!-- /tab-dashact -->
+
+  <!-- ===================== TAB DETALLE DE HORAS ===================== -->
+  <!-- ===================== TAB HORAS (captura) ===================== -->
+  <div class="tabpanel" id="tab-horas" style="display:none">
     <section class="period">
       <div class="period-nav">
-        <button class="pn-btn" id="prevWeek" title="Semana anterior">‹</button>
+        <button class="pn-btn" id="prevMonth" title="Mes anterior" aria-label="Mes anterior">‹</button>
         <div class="period-label">
-          <span class="pl-main" id="periodMain">Esta semana</span>
-          <span class="pl-sub" id="periodSub"></span>
+          <span class="pl-main" id="hMonthMain">Mes</span>
+          <span class="pl-sub" id="hMonthSub">Detalle de horas</span>
         </div>
-        <button class="pn-btn" id="nextWeek" title="Semana siguiente">›</button>
+        <button class="pn-btn" id="nextMonth" title="Mes siguiente" aria-label="Mes siguiente">›</button>
       </div>
       <div class="period-modes">
-        <button class="pm-btn sel" data-mode="week">Semana</button>
-        <button class="pm-btn" data-mode="all">Todo</button>
-        <button class="pm-btn" data-mode="range">Rango…</button>
+        <button class="btn-ghost" id="hToday" style="padding:8px 14px">Mes actual</button>
+        <button class="btn-excel" id="hExportBtn">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="m9 13 2 3 2-3"/></svg>
+          Descargar Excel
+        </button>
       </div>
-      <div class="period-range" id="rangeBox">
-        <input type="date" id="rangeFrom"><span class="rg-sep">→</span><input type="date" id="rangeTo">
-        <button class="btn-ghost" id="applyRange" style="padding:8px 14px">Aplicar</button>
+    </section>
+
+    <div class="hours-hint">
+      Marca el <b>Estado</b> de cada día. Al elegir <b>Laborado</b> se habilitan las horas y el total se calcula solo. Las horas por defecto son 8:00 / 12:30–1:30 p.m. / 5:00 p.m. (editables).
+    </div>
+
+    <section class="cards-grid" id="hCards"></section>
+  </div><!-- /tab-horas -->
+
+  <!-- ===================== TAB DASHBOARD HORAS ===================== -->
+  <div class="tabpanel" id="tab-dashhoras" style="display:none">
+    <section class="period">
+      <div class="period-nav">
+        <button class="pn-btn" id="prevMonth2" title="Mes anterior" aria-label="Mes anterior">‹</button>
+        <div class="period-label">
+          <span class="pl-main" id="hMonthMain2">Mes</span>
+          <span class="pl-sub">Dashboard de horas</span>
+        </div>
+        <button class="pn-btn" id="nextMonth2" title="Mes siguiente" aria-label="Mes siguiente">›</button>
+      </div>
+      <div class="period-modes">
+        <button class="btn-ghost" id="hToday2" style="padding:8px 14px">Mes actual</button>
       </div>
     </section>
 
     <section class="kpis">
-      <div class="kpi"><div class="label">Horas registradas</div><div class="value" id="kHoras">0<small> h</small></div><div class="spark"><i id="sparkHoras" style="width:0%"></i></div></div>
-      <div class="kpi"><div class="label">Actividades</div><div class="value" id="kAct">0</div><div class="spark"><i id="sparkAct" style="width:0%"></i></div></div>
-      <div class="kpi"><div class="label">Días con registro</div><div class="value" id="kDias">0</div><div class="spark"><i id="sparkDias" style="width:0%"></i></div></div>
-      <div class="kpi"><div class="label">Prom. horas / día</div><div class="value" id="kProm">0<small> h</small></div><div class="spark"><i id="sparkProm" style="width:0%"></i></div></div>
+      <div class="kpi"><div class="label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Horas del mes</div><div class="value" id="hkHoras">0<small> h</small></div><div class="spark"><i id="hsparkHoras" style="width:0%"></i></div></div>
+      <div class="kpi"><div class="label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>Días laborados</div><div class="value" id="hkLab">0</div><div class="spark"><i id="hsparkLab" style="width:0%"></i></div></div>
+      <div class="kpi"><div class="label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.9 6.3 6.8.7-5 4.6 1.4 6.7L12 17.8 5.9 20.3 7.3 13.6l-5-4.6 6.8-.7z"/></svg>Feriados</div><div class="value" id="hkFer">0</div><div class="spark"><i id="hsparkFer" style="width:0%"></i></div></div>
+      <div class="kpi"><div class="label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg>Prom. h/día laborado</div><div class="value" id="hkProm">0<small> h</small></div><div class="spark"><i id="hsparkProm" style="width:0%"></i></div></div>
     </section>
 
     <section class="dash">
       <div class="panel">
-        <div class="ph"><h2>Horas por día</h2><span class="chip" id="trendChip">período</span></div>
-        <p class="sub">Horas trabajadas por día en el período.</p>
+        <div class="ph"><h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M21 7v6h-6" /></svg>Horas por día del mes</h2><span class="chip" id="hTrendChip">mes</span></div>
+        <p class="sub">Total de horas trabajadas por día.</p>
         <div class="body trend-wrap">
-          <svg class="trend" id="trendSvg" viewBox="0 0 720 210" preserveAspectRatio="none"></svg>
-          <div class="tip" id="trendTip"></div>
+          <svg class="trend" id="hTrendSvg" viewBox="0 0 720 210" preserveAspectRatio="none"></svg>
+          <div class="tip" id="hTrendTip"></div>
         </div>
       </div>
       <div class="panel">
-        <div class="ph"><h2>Distribución</h2></div>
-        <p class="sub">Horas por categoría y por área.</p>
+        <div class="ph"><h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 1 0 10 10H12z"/><path d="M12 2v10h10A10 10 0 0 0 12 2z"/></svg>Distribución</h2></div>
+        <p class="sub">Días por estado y horas por semana.</p>
         <div class="body">
-          <div class="seg-title">Por categoría</div>
-          <div id="byCat"></div>
-          <div class="seg-title" style="margin-top:18px">Por área</div>
-          <div id="byArea"></div>
+          <div class="seg-title">Días por estado</div>
+          <div id="hByEstado"></div>
+          <div class="seg-title" style="margin-top:18px">Horas por semana</div>
+          <div id="hByWeek"></div>
         </div>
       </div>
     </section>
 
-    <div class="datasrc">
-      <span>🔥</span>
-      <div><b>Firebase Realtime Database activo.</b> Los datos se sincronizan en tiempo real entre todos los usuarios.</div>
-    </div>
-  </div>
+    <section class="panel" style="margin-bottom:18px">
+      <div class="ph"><h2><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>Comparativa de meses</h2><span class="chip" id="hYearChip"></span></div>
+      <p class="sub">Horas registradas por mes en el año.</p>
+      <div class="body"><div id="hByMonth"></div></div>
+    </section>
+  </div><!-- /tab-dashhoras -->
 </div>
 
 <div class="toast" id="toast"></div>
 
 <script>
-/* ===== CONFIGURACIÓN FIREBASE — cambia estos valores por los de tu proyecto ===== */
-const FIREBASE_CONFIG = {
-  apiKey:            "AIzaSyB9vAgKWYHsJscMaR2tpsoME4Xgn72tBYs",
-  authDomain:        "byc-registro-actividades.firebaseapp.com",
-  databaseURL:       "https://byc-registro-actividades-default-rtdb.firebaseio.com",
-  projectId:         "byc-registro-actividades",
-  storageBucket:     "byc-registro-actividades.firebasestorage.app",
-  messagingSenderId: "341041616065",
-  appId:             "1:341041616065:web:6089777aa74fbee9f97040"
-};
-const DB_PATH = "actividades"; // nodo raíz en Realtime Database
-
-/* ===== Firebase SDK (compat v9) ===== */
-</script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-<script>
-firebase.initializeApp(FIREBASE_CONFIG);
-const _db = firebase.database();
-const _ref = _db.ref(DB_PATH);
-
-/* ===== DataStore (Firebase Realtime Database) ===== */
 const DataStore = (() => {
-  let cache = [];
-  let listeners = [];
-
-  function emit(){ listeners.forEach(fn => fn([...cache])); }
-
-  // Escucha cambios en tiempo real
-  _ref.on('value', snap => {
-    const val = snap.val();
-    cache = val ? Object.entries(val).map(([id, data]) => ({ id, ...data })) : [];
-    // Actualizar status dot
-    const dot = document.getElementById('srcStatus');
-    if (dot) { dot.textContent = 'Firebase · tiempo real'; dot.style.setProperty('--dot-color', 'var(--accent)'); }
-    emit();
-  }, err => {
-    console.error('Firebase error:', err);
-    const dot = document.getElementById('srcStatus');
-    if (dot) dot.textContent = 'Error de conexión';
-  });
-
+  const KEY='byc_actividades_v1'; let cache=[]; let listeners=[];
+  function load(){ try{cache=JSON.parse(localStorage.getItem(KEY))||[];}catch{cache=[];} }
+  function persist(){ localStorage.setItem(KEY,JSON.stringify(cache)); emit(); }
+  function emit(){ listeners.forEach(fn=>fn([...cache])); }
+  load();
   return {
     onChange(fn){ listeners.push(fn); fn([...cache]); },
-    add(item){
-      const newRef = _ref.push();
-      newRef.set(item);
-      // Firebase emitirá onChange via .on('value')
-    },
-    update(id, patch){
-      _ref.child(id).update(patch);
-    },
-    remove(id){
-      _ref.child(id).remove();
-    },
+    add(item){ item.id=crypto.randomUUID(); cache.push(item); persist(); },
+    update(id,patch){ const i=cache.findIndex(x=>x.id===id); if(i>-1){cache[i]={...cache[i],...patch}; persist();} },
+    remove(id){ cache=cache.filter(x=>x.id!==id); persist(); },
     all(){ return [...cache]; }
   };
 })();
@@ -432,31 +515,31 @@ function syncTimeBtn(target){
   if(val){ span.textContent=to12h(val); span.classList.remove('ph'); }
   else{ span.textContent='Seleccionar…'; span.classList.add('ph'); }
 }
-function buildTimePicker(target){
-  const hidden=$('#'+target); const btn=$('#'+target+'Btn');
-  // close any open popup
+/* ===== Selector de hora 12h unificado (usado por Actividades y Horas) =====
+   openTimePicker(btn, currentVal, onPick): abre el popup junto al botón,
+   permite escribir manualmente o elegir de la lista (30 min), y llama
+   onPick(valor24h) al confirmar. Posicionado fijo para no recortarse. */
+function openTimePicker(btn, currentVal, onPick){
   document.querySelectorAll('.tp-pop').forEach(p=>p.remove());
   document.querySelectorAll('.time-btn.active').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
-  const cur=hidden.value; let curH=cur?+cur.split(':')[0]:8; let curM=cur?+cur.split(':')[1]:0;
-  let ampm = curH>=12?'pm':'am';
+  const cur=currentVal||''; let curH=cur?+cur.split(':')[0]:8, curM=cur?+cur.split(':')[1]:0;
+  let ampm=curH>=12?'pm':'am';
   const pop=document.createElement('div'); pop.className='tp-pop';
+  function pick(v){ onPick(v); close(); }
   function applyManual(silent){
     const v=parseManualTime(pop.querySelector('.tp-manual').value);
-    if(v){ hidden.value=v; syncTimeBtn(target); updateDurHint(); return true; }
-    if(!silent){ pop.querySelector('.tp-manual').classList.add('err'); }
+    if(v){ pick(v); return true; }
+    if(!silent) pop.querySelector('.tp-manual').classList.add('err');
     return false;
   }
   function draw(){
     let grid='';
-    for(let h=1;h<=12;h++){
-      for(const mm of [0,30]){
-        // convert 12h+ampm to 24h
-        let h24 = ampm==='am' ? (h===12?0:h) : (h===12?12:h+12);
-        const v=`${String(h24).padStart(2,'0')}:${String(mm).padStart(2,'0')}`;
-        const sel = (h24===curH && mm===curM) ? ' class="sel"' : '';
-        grid+=`<button type="button" data-v="${v}"${sel}>${h}:${String(mm).padStart(2,'0')}</button>`;
-      }
+    for(let h=1;h<=12;h++) for(const mm of [0,30]){
+      const h24 = ampm==='am' ? (h===12?0:h) : (h===12?12:h+12);
+      const v=`${String(h24).padStart(2,'0')}:${String(mm).padStart(2,'0')}`;
+      const sel=(h24===curH&&mm===curM)?' class="sel"':'';
+      grid+=`<button type="button" data-v="${v}"${sel}>${h}:${String(mm).padStart(2,'0')}</button>`;
     }
     pop.innerHTML=`
       <div class="tp-manual-row">
@@ -471,53 +554,78 @@ function buildTimePicker(target){
       <div class="tp-grid">${grid}</div>`;
     const mi=pop.querySelector('.tp-manual');
     mi.addEventListener('input',()=>mi.classList.remove('err'));
-    mi.addEventListener('keydown',e=>{ if(e.key==='Enter'){e.preventDefault(); if(applyManual())close();} });
-    pop.querySelector('.tp-ok').onclick=()=>{ if(applyManual())close(); };
+    mi.addEventListener('keydown',e=>{ if(e.key==='Enter'){e.preventDefault(); applyManual();} });
+    pop.querySelector('.tp-ok').onclick=()=>applyManual();
     pop.querySelectorAll('[data-ap]').forEach(b=>b.onclick=()=>{ampm=b.dataset.ap;draw();});
-    pop.querySelectorAll('[data-v]').forEach(b=>b.onclick=()=>{
-      hidden.value=b.dataset.v; syncTimeBtn(target); updateDurHint();
-      close();
-    });
+    pop.querySelectorAll('[data-v]').forEach(b=>b.onclick=()=>pick(b.dataset.v));
   }
   draw();
-  btn.parentElement.style.position='relative';
-  btn.parentElement.appendChild(pop);
-  setTimeout(()=>{const mi=pop.querySelector('.tp-manual');mi&&mi.focus();},10);
-  function close(){ pop.remove(); btn.classList.remove('active'); document.removeEventListener('click',outside,true); }
+  pop.style.position='fixed'; pop.style.zIndex='9999';
+  document.body.appendChild(pop);
+  function place(){
+    const r=btn.getBoundingClientRect();
+    const ph=pop.offsetHeight||320, pw=pop.offsetWidth||200;
+    let top=r.bottom+6, left=r.left;
+    if(top+ph>window.innerHeight-8) top=Math.max(8,r.top-ph-6);
+    if(left+pw>window.innerWidth-8) left=window.innerWidth-pw-8;
+    if(left<8) left=8;
+    pop.style.top=top+'px'; pop.style.left=left+'px';
+  }
+  place();
+  setTimeout(()=>{const mi=pop.querySelector('.tp-manual');mi&&mi.focus();place();},10);
+  window.addEventListener('scroll',place,true);
+  window.addEventListener('resize',place);
+  function close(){ pop.remove(); btn.classList.remove('active'); document.removeEventListener('click',outside,true); window.removeEventListener('scroll',place,true); window.removeEventListener('resize',place); }
   function outside(e){ if(!pop.contains(e.target) && e.target!==btn && !btn.contains(e.target)){ applyManual(true); close(); } }
   setTimeout(()=>document.addEventListener('click',outside,true),0);
 }
+
+/* Selector para el formulario de Actividades */
+function buildTimePicker(target){
+  const hidden=$('#'+target), btn=$('#'+target+'Btn');
+  openTimePicker(btn, hidden.value, v=>{ hidden.value=v; syncTimeBtn(target); updateDurHint(); });
+}
 $('#inicioBtn').addEventListener('click',()=>buildTimePicker('inicio'));
 $('#finBtn').addEventListener('click',()=>buildTimePicker('fin'));
-syncTimeBtn('inicio');syncTimeBtn('fin');
+$('#almIniBtn').addEventListener('click',()=>buildTimePicker('almIni'));
+$('#almFinBtn').addEventListener('click',()=>buildTimePicker('almFin'));
+syncTimeBtn('inicio');syncTimeBtn('fin');syncTimeBtn('almIni');syncTimeBtn('almFin');
 
 let editingId=null;
 function enterEdit(it){
   editingId=it.id;
   $('#fecha').value=it.fecha;$('#inicio').value=it.inicio;$('#fin').value=it.fin;
-  syncTimeBtn('inicio');syncTimeBtn('fin');
+  $('#almIni').value=it.almIni||'';$('#almFin').value=it.almFin||'';
+  syncTimeBtn('inicio');syncTimeBtn('fin');syncTimeBtn('almIni');syncTimeBtn('almFin');
   $('#actividad').value=it.actividad;$('#area').value=it.area;$('#categoria').value=it.categoria;$('#estado').value=it.estado;
   $('#submitBtn').textContent='Guardar cambios';$('#cancelEdit').style.display='inline-block';
   updateDurHint(); window.scrollTo({top:0,behavior:'smooth'});
 }
 function exitEdit(){
   editingId=null;$('#actForm').reset();$('#fecha').value=new Date().toISOString().slice(0,10);
-  $('#inicio').value='';$('#fin').value='';
-  syncTimeBtn('inicio');syncTimeBtn('fin');
+  $('#inicio').value='';$('#fin').value='';$('#almIni').value='';$('#almFin').value='';
+  syncTimeBtn('inicio');syncTimeBtn('fin');syncTimeBtn('almIni');syncTimeBtn('almFin');
   $('#submitBtn').textContent='Agregar actividad';$('#cancelEdit').style.display='none';$('#durHint').textContent='';
 }
 $('#cancelEdit').addEventListener('click',exitEdit);
+
+/* Atajos de teclado en el formulario: Ctrl/Cmd+Enter guarda, Esc cancela edición */
+$('#actForm').addEventListener('keydown',e=>{
+  if((e.ctrlKey||e.metaKey)&&e.key==='Enter'){ e.preventDefault(); $('#actForm').requestSubmit(); }
+  else if(e.key==='Escape'&&editingId){ e.preventDefault(); exitEdit(); }
+});
 
 $('#actForm').addEventListener('submit',e=>{
   e.preventDefault();
   const dur=durationHours($('#inicio').value,$('#fin').value);
   if(dur<=0){toast('Revisa las horas: la duración debe ser positiva');return;}
   const item={fecha:$('#fecha').value,inicio:$('#inicio').value,fin:$('#fin').value,duracion:dur,
+    almIni:$('#almIni').value,almFin:$('#almFin').value,
     actividad:$('#actividad').value.trim(),area:$('#area').value,categoria:$('#categoria').value,estado:$('#estado').value};
   if(editingId){DataStore.update(editingId,item);toast('Actividad actualizada');exitEdit();}
   else{DataStore.add(item);toast('Actividad agregada');
-    $('#actividad').value='';$('#inicio').value='';$('#fin').value='';
-    syncTimeBtn('inicio');syncTimeBtn('fin');$('#durHint').textContent='';}
+    $('#actividad').value='';$('#inicio').value='';$('#fin').value='';$('#almIni').value='';$('#almFin').value='';
+    syncTimeBtn('inicio');syncTimeBtn('fin');syncTimeBtn('almIni');syncTimeBtn('almFin');$('#durHint').textContent='';}
 });
 
 /* ===== PERÍODO (semana laboral L-V, navegación, rango) ===== */
@@ -601,12 +709,24 @@ function render(){
   renderBreak('#byEstado',countBy(all,'estado'),'');
   renderTrend(all);
 
+  // Resumen rápido (todo el historial, no filtrado por período)
+  const qs=$('#quickSummary');
+  if(qs){
+    const allH=current.filter(r=>!CONFIG.noContabiliza.includes(r.categoria)).reduce((s,r)=>s+(+r.duracion||0),0);
+    const allDias=new Set(current.map(r=>r.fecha)).size;
+    const rows2=[['Actividades totales',current.length],['Horas registradas',fmtH(allH)+' h'],
+      ['Días con registro',allDias],['Promedio h/día',allDias?fmtH(allH/allDias)+' h':'0 h']];
+    qs.innerHTML=rows2.map(([k,v])=>`<div style="display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid #ece7da"><span style="color:var(--muted);font-size:13.5px">${k}</span><span style="font-weight:700;font-variant-numeric:tabular-nums">${v}</span></div>`).join('');
+  }
+
   const tb=$('#tbody');tb.innerHTML='';
   rows.forEach(r=>{
     const tr=document.createElement('tr');
     tr.innerHTML=`
       <td class="num-cell">${fmtDate(r.fecha)}</td>
       <td class="num-cell">${to12h(r.inicio)}</td>
+      <td class="num-cell" style="color:var(--muted)">${r.almIni?to12h(r.almIni):'—'}</td>
+      <td class="num-cell" style="color:var(--muted)">${r.almFin?to12h(r.almFin):'—'}</td>
       <td class="num-cell">${to12h(r.fin)}</td>
       <td class="num-cell">${fmtH(r.duracion)}</td>
       <td class="act-text">${escapeHtml(r.actividad||'')}</td>
@@ -745,7 +865,7 @@ $('#exportBtn').addEventListener('click',async ()=>{
 
   /* ---------- Hoja ACTIVIDADES ---------- */
   const ws=wb.addWorksheet('Actividades',{views:[{state:'frozen',ySplit:4}]});
-  ws.columns=[{width:12},{width:12},{width:12},{width:11},{width:50},{width:18},{width:15},{width:13}];
+  ws.columns=[{width:12},{width:12},{width:13},{width:13},{width:12},{width:11},{width:50},{width:18},{width:15},{width:13}];
   // título
   ws.mergeCells('A1:J1');const t=ws.getCell('A1');
   t.value='Registro de Actividades';t.font={name:'Archivo',size:16,bold:true,color:{argb:'FFFFFFFF'}};
@@ -756,7 +876,7 @@ $('#exportBtn').addEventListener('click',async ()=>{
   st.alignment={indent:1};ws.getRow(2).height=18;
   ws.getRow(3).height=6;
   // header
-  const heads=['Fecha','Hora inicio','Hora fin','Duración (h)','Actividad','Área','Categoría','Estado'];
+  const heads=['Fecha','Hora inicio','Inicio almuerzo','Fin almuerzo','Hora fin','Duración (h)','Actividad','Área','Categoría','Estado'];
   const hr=ws.getRow(4);
   heads.forEach((h,i)=>{const c=hr.getCell(i+1);c.value=h;
     c.font={name:'Archivo',size:11,bold:true,color:{argb:'FFFFFFFF'}};
@@ -768,26 +888,31 @@ $('#exportBtn').addEventListener('click',async ()=>{
   const data=[...periodSet].sort((a,b)=>(a.fecha+a.inicio).localeCompare(b.fecha+b.inicio));
   data.forEach((r,idx)=>{
     const row=ws.addRow([fmtDate(r.fecha),to12h(r.inicio),
+      r.almIni?to12h(r.almIni):'',r.almFin?to12h(r.almFin):'',
       to12h(r.fin),+r.duracion||0,
       r.actividad||'',r.area||'',r.categoria||'',r.estado||'']);
     row.eachCell((c,col)=>{
       c.font={name:'Archivo',size:10.5,color:{argb:INK}};
-      c.alignment={vertical:'top',horizontal:col===5?'left':'center',wrapText:col===5};
+      c.alignment={vertical:'top',horizontal:col===7?'left':'center',wrapText:col===7};
       c.border={bottom:{style:'hair',color:{argb:'FFE0DCCF'}}};
       if(idx%2===1)c.fill={type:'pattern',pattern:'solid',fgColor:{argb:ALT}};
     });
-    row.getCell(4).numFmt='0.00';
+    row.getCell(6).numFmt='0.00';
+    // almuerzo en gris
+    row.getCell(3).font={name:'Archivo',size:10.5,color:{argb:MUT}};
+    row.getCell(4).font={name:'Archivo',size:10.5,color:{argb:MUT}};
     // estado color
-    const estCell=row.getCell(8);
+    const estCell=row.getCell(10);
     if(r.estado==='Completado')estCell.font={name:'Archivo',size:10.5,bold:true,color:{argb:ACC}};
     else if(r.estado==='Pendiente')estCell.font={name:'Archivo',size:10.5,bold:true,color:{argb:'FFB4452F'}};
   });
   // total row
   const totH=data.filter(r=>!CONFIG.noContabiliza.includes(r.categoria)).reduce((s,r)=>s+(+r.duracion||0),0);
-  const tot=ws.addRow(['','','TOTAL',Math.round(totH*100)/100,'','','','']);
-  tot.getCell(3).font={bold:true,color:{argb:INK}};tot.getCell(3).alignment={horizontal:'right'};
-  tot.getCell(4).font={bold:true,color:{argb:ACC}};tot.getCell(4).numFmt='0.00';
-  ws.autoFilter='A4:H4';
+  const tot=ws.addRow(['','','','','TOTAL',Math.round(totH*100)/100,'(excluye almuerzo)','','','']);
+  tot.getCell(5).font={bold:true,color:{argb:INK}};tot.getCell(5).alignment={horizontal:'right'};
+  tot.getCell(6).font={bold:true,color:{argb:ACC}};tot.getCell(6).numFmt='0.00';
+  tot.getCell(7).font={italic:true,size:10,color:{argb:MUT}};
+  ws.autoFilter='A4:J4';
 
   /* ---------- Datos agregados ---------- */
   const cat=sumBy(periodSet,'categoria','duracion');
@@ -853,18 +978,352 @@ $('#exportBtn').addEventListener('click',async ()=>{
   toast('Excel exportado');
 });
 
-/* ===== LÓGICA DE PESTAÑAS ===== */
-document.querySelectorAll('.tab-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    const tab = btn.dataset.tab;
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
-    btn.classList.add('active');
-    document.getElementById('tab-' + tab).classList.add('active');
-    // Si se activa el dashboard, re-renderizar la gráfica de tendencia
-    if (tab === 'dashboard') renderTrend(current);
-  });
+/* ============================================================
+   PESTAÑAS
+   ============================================================ */
+document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{
+  document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('sel',x===t));
+  document.querySelectorAll('.tabpanel').forEach(p=>p.style.display='none');
+  $('#tab-'+t.dataset.tab).style.display='';
+  const tab=t.dataset.tab;
+  if(tab==='horas'||tab==='dashhoras') renderHours();
+  else render();
 });
+
+/* ============================================================
+   DETALLE DE HORAS
+   ============================================================ */
+const HoursStore=(()=>{
+  const KEY='infinity_horas_v1'; let cache={}; let listeners=[];
+  function load(){try{cache=JSON.parse(localStorage.getItem(KEY))||{};}catch{cache={};}}
+  function persist(){localStorage.setItem(KEY,JSON.stringify(cache));emit();}
+  function emit(){listeners.forEach(fn=>fn({...cache}));}
+  load();
+  return {
+    onChange(fn){listeners.push(fn);},
+    get(fecha){return cache[fecha]||null;},
+    set(fecha,data){cache[fecha]={...cache[fecha],...data};persist();},
+    all(){return {...cache};}
+  };
+})();
+
+const FERIADOS_CR={'01-01':1,'04-02':1,'04-03':1,'04-11':1,'05-01':1,'07-25':1,'08-02':1,'08-15':1,'09-15':1,'12-01':1,'12-25':1};
+const MESES_FULL=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+const DOW=['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+const DEF_TIMES={ent:'08:00',ai:'12:30',af:'13:30',sal:'17:00'};
+let hMonth=new Date().getMonth(), hYear=new Date().getFullYear();
+
+function defaultEstado(y,m,d){
+  const dt=new Date(y,m,d); const wd=dt.getDay();
+  const key=`${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+  if(FERIADOS_CR[key]) return 'FERIADO';
+  if(wd===0||wd===6) return 'NO APLICA';
+  return 'Laborado';
+}
+/* ¿La fecha (y,m,d) es posterior a hoy? -> debe quedar vacía */
+function isFutureDay(y,m,d){
+  const today=new Date(); today.setHours(0,0,0,0);
+  const dt=new Date(y,m,d); dt.setHours(0,0,0,0);
+  return dt>today;
+}
+/* Fecha de inicio del control de horas: nada antes del 9 de marzo de 2026 */
+const HOURS_START=new Date(2026,2,9); // mes 2 = marzo
+function isBeforeStart(y,m,d){
+  const dt=new Date(y,m,d); dt.setHours(0,0,0,0);
+  return dt<HOURS_START;
+}
+function dayHours(rec){
+  if(!rec||rec.estado!=='Laborado') return '';
+  const ent=rec.ent,sal=rec.sal; if(!ent||!sal) return '';
+  const ai=rec.ai,af=rec.af;
+  const mins=t=>{const[h,m]=t.split(':').map(Number);return h*60+m;};
+  let total=mins(sal)-mins(ent);
+  if(ai&&af) total-=(mins(af)-mins(ai));
+  return total>0?Math.round(total/60*100)/100:0;
+}
+function recOrDefault(fecha,y,m,d){
+  // Antes de la fecha de inicio (9 marzo 2026): siempre vacío, ignorando datos previos
+  if(isBeforeStart(y,m,d)) return {estado:''};
+  const saved=HoursStore.get(fecha);
+  if(saved) return saved;
+  // Días futuros (después de hoy) quedan vacíos por defecto
+  if(isFutureDay(y,m,d)) return {estado:''};
+  const est=defaultEstado(y,m,d);
+  return est==='Laborado'?{estado:est,...DEF_TIMES}:{estado:est};
+}
+
+function updateMonthLabel(){
+  const lbl=`${MESES_FULL[hMonth]} ${hYear}`;
+  const a=$('#hMonthMain'); if(a)a.textContent=lbl;
+  const b=$('#hMonthMain2'); if(b)b.textContent=lbl;
+}
+function renderHours(){
+  updateMonthLabel();
+  const grid=$('#hCards'); grid.innerHTML='';
+  const ndays=new Date(hYear,hMonth+1,0).getDate();
+  let totH=0,lab=0,fer=0,na=0,sm=0;
+  const dayData=[]; // {d, wd, h}
+  for(let d=1;d<=ndays;d++){
+    const fecha=`${hYear}-${String(hMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const rec=recOrDefault(fecha,hYear,hMonth,d);
+    const wd=new Date(hYear,hMonth,d).getDay();
+    const h=dayHours(rec);
+    if(rec.estado==='Laborado'){lab++; if(typeof h==='number')totH+=h;}
+    else if(rec.estado==='FERIADO')fer++;
+    else if(rec.estado==='NO APLICA')na++;
+    else sm++;
+    dayData.push({d,wd,h:(rec.estado==='Laborado'&&typeof h==='number')?h:0,estado:rec.estado});
+    grid.appendChild(buildDayCard(fecha,d,wd,rec,h));
+  }
+  $('#hkHoras').innerHTML=fmtH(totH)+'<small> h</small>';
+  $('#hkLab').textContent=lab;
+  $('#hkFer').textContent=fer;
+  $('#hkProm').innerHTML=(lab?fmtH(totH/lab):'0')+'<small> h</small>';
+  $('#hsparkHoras').style.width=Math.min(100,totH/2)+'%';
+  $('#hsparkLab').style.width=Math.min(100,lab*4.3)+'%';
+  $('#hsparkFer').style.width=Math.min(100,fer*15)+'%';
+  $('#hsparkProm').style.width=Math.min(100,(lab?totH/lab:0)*11)+'%';
+  renderHoursDash(dayData,{lab,fer,na,sm});
+}
+
+function renderHoursDash(dayData,counts){
+  // estado breakdown
+  const estadoEntries=[['Laborado',counts.lab],['NO APLICA',counts.na],['FERIADO',counts.fer]];
+  if(counts.sm) estadoEntries.push(['Sin marcar',counts.sm]);
+  renderBreak('#hByEstado',estadoEntries.filter(e=>e[1]>0),'');
+  // horas por semana (semana del mes: 1-7,8-14,...)
+  const weeks={};
+  dayData.forEach(x=>{const w=Math.floor((x.d-1)/7)+1; weeks['Sem '+w]=(weeks['Sem '+w]||0)+x.h;});
+  renderBreak('#hByWeek',Object.entries(weeks).filter(e=>e[1]>0),'h');
+  // comparativa de meses del año
+  $('#hYearChip').textContent=hYear;
+  const months=[];
+  for(let m=0;m<12;m++){
+    const nd=new Date(hYear,m+1,0).getDate(); let mh=0;
+    for(let d=1;d<=nd;d++){
+      const fecha=`${hYear}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+      const rec=recOrDefault(fecha,hYear,m,d);
+      const h=dayHours(rec); if(rec.estado==='Laborado'&&typeof h==='number')mh+=h;
+    }
+    months.push([MESES_FULL[m].slice(0,3),Math.round(mh*100)/100]);
+  }
+  renderHoursMonthBars('#hByMonth',months);
+  // trend
+  renderHoursTrend(dayData);
+}
+
+function renderHoursMonthBars(sel,entries){
+  const el=$(sel);
+  const max=Math.max(...entries.map(e=>e[1]),1);
+  el.innerHTML=`<div style="display:grid;grid-template-columns:repeat(12,1fr);gap:6px;align-items:end;height:120px">`+
+    entries.map(([n,v],i)=>{
+      const cur=(i===hMonth);
+      return `<div style="display:flex;flex-direction:column;align-items:center;gap:5px;height:100%;justify-content:flex-end">
+        <div style="font-size:10px;font-weight:600;color:${cur?'var(--accent)':'var(--muted)'};font-variant-numeric:tabular-nums">${v||''}</div>
+        <div title="${n}: ${fmtH(v)} h" style="width:100%;max-width:26px;height:${Math.max(2,v/max*92)}px;border-radius:5px 5px 0 0;background:${cur?'linear-gradient(var(--accent),var(--accent-2))':'var(--accent-soft)'}"></div>
+        <div style="font-size:10px;color:${cur?'var(--ink)':'var(--muted)'};font-weight:${cur?'700':'500'}">${n}</div>
+      </div>`;
+    }).join('')+`</div>`;
+}
+
+function renderHoursTrend(dayData){
+  const svg=$('#hTrendSvg'),tip=$('#hTrendTip');
+  $('#hTrendChip').textContent=`${MESES_FULL[hMonth]}`;
+  const days=dayData.map(x=>[x.d,x.h,x.estado]);
+  const W=720,H=210,padL=30,padR=14,padT=14,padB=24;
+  const maxV=Math.max(...days.map(d=>d[1]),8);
+  const niceMax=Math.ceil(maxV/2)*2||2;
+  const x=i=>padL+(days.length<=1?(W-padL-padR)/2:i*(W-padL-padR)/(days.length-1));
+  const y=v=>padT+(1-v/niceMax)*(H-padT-padB);
+  let gl='',yl='';
+  for(let g=0;g<=niceMax;g+=Math.max(2,niceMax/4)){
+    gl+=`<line class="gl" x1="${padL}" y1="${y(g)}" x2="${W-padR}" y2="${y(g)}"/>`;
+    yl+=`<text class="ylbl" x="${padL-6}" y="${y(g)+3}" text-anchor="end">${g}</text>`;
+  }
+  const pts=days.map((d,i)=>[x(i),y(d[1])]);
+  const line=pts.map((p,i)=>(i?'L':'M')+p[0].toFixed(1)+' '+p[1].toFixed(1)).join(' ');
+  const area=`M${pts[0][0].toFixed(1)} ${(H-padB)} `+pts.map(p=>'L'+p[0].toFixed(1)+' '+p[1].toFixed(1)).join(' ')+` L${pts[pts.length-1][0].toFixed(1)} ${(H-padB)} Z`;
+  const step=Math.ceil(days.length/10);
+  let xl='';days.forEach((d,i)=>{if(i%step===0||i===days.length-1){xl+=`<text class="lbl" x="${x(i)}" y="${H-7}" text-anchor="middle">${d[0]}</text>`;}});
+  const dots=pts.map((p,i)=>`<circle class="dot" cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="3.5" data-i="${i}"/>`).join('');
+  svg.innerHTML=`<defs><linearGradient id="hgrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#0f6b4f" stop-opacity=".35"/><stop offset="100%" stop-color="#0f6b4f" stop-opacity="0"/></linearGradient></defs>
+    ${gl}${yl}<line class="axis" x1="${padL}" y1="${H-padB}" x2="${W-padR}" y2="${H-padB}"/>
+    <path class="area" style="fill:url(#hgrad)" d="${area}"/><path class="line" d="${line}"/>${dots}${xl}`;
+  svg.querySelectorAll('.dot').forEach(c=>{
+    c.addEventListener('mouseenter',()=>{
+      const i=+c.dataset.i;const dd=days[i];
+      const rect=svg.getBoundingClientRect();const wrap=svg.parentElement.getBoundingClientRect();
+      const cx=(+c.getAttribute('cx'))/W*rect.width+(rect.left-wrap.left);
+      const cy=(+c.getAttribute('cy'))/H*rect.height+(rect.top-wrap.top);
+      tip.style.left=cx+'px';tip.style.top=cy+'px';
+      tip.innerHTML=`Día ${dd[0]} · <b>${fmtH(dd[1])} h</b>`;tip.style.opacity=1;
+    });
+    c.addEventListener('mouseleave',()=>tip.style.opacity=0);
+  });
+}
+
+function buildDayCard(fecha,d,wd,rec,h){
+  const card=document.createElement('div');
+  const cls=rec.estado==='Laborado'?'laborado':rec.estado==='FERIADO'?'feriado':rec.estado==='NO APLICA'?'noaplica':'sinmarcar';
+  card.className='daycard '+cls+((wd===0||wd===6)?' weekend':'');
+  const hShow=(rec.estado==='Laborado'&&h!=='')?`${fmtH(h)}<small> h</small>`:'—';
+  card.innerHTML=`
+    <div class="dc-head">
+      <div class="dc-date"><span class="dc-day">${d}</span><span class="dc-dow">${DOW[wd]}</span></div>
+      <span class="dc-hours ${rec.estado!=='Laborado'?'zero':''}" data-h="${fecha}" title="Horas trabajadas del día">${hShow}</span>
+    </div>
+    <div class="dc-body">
+      <div class="dc-estado">
+        <select data-estado="${fecha}">
+          <option value=""${!rec.estado?' selected':''}>— Sin marcar —</option>
+          <option${rec.estado==='Laborado'?' selected':''}>Laborado</option>
+          <option${rec.estado==='NO APLICA'?' selected':''}>NO APLICA</option>
+          <option${rec.estado==='FERIADO'?' selected':''}>FERIADO</option>
+        </select>
+      </div>
+      <div class="dc-times ${rec.estado!=='Laborado'?'hidden':''}" data-times="${fecha}">
+        ${hTimeField(fecha,'ent','Entrada',rec.ent)}
+        ${hTimeField(fecha,'sal','Salida',rec.sal)}
+        ${hTimeField(fecha,'ai','Inicio almuerzo',rec.ai)}
+        ${hTimeField(fecha,'af','Fin almuerzo',rec.af)}
+      </div>
+    </div>`;
+  // estado change
+  card.querySelector('[data-estado]').addEventListener('change',e=>{
+    const est=e.target.value;
+    const patch={estado:est};
+    if(est==='Laborado'){ const cur=HoursStore.get(fecha)||{}; if(!cur.ent){Object.assign(patch,DEF_TIMES);} }
+    HoursStore.set(fecha,patch);
+    renderHours();
+  });
+  // time pickers
+  card.querySelectorAll('.time-btn').forEach(btn=>{
+    btn.addEventListener('click',()=>buildHoursPicker(fecha,btn.dataset.field));
+  });
+  return card;
+}
+function hTimeField(fecha,field,label,val){
+  const id=`h_${fecha}_${field}`.replace(/-/g,'');
+  return `<div class="dc-time"><label>${label}</label>
+    <button type="button" class="time-btn" id="${id}Btn" data-field="${field}"><span${val?'':' class="ph"'}>${val?to12h(val):'—'}</span></button>
+    <input type="hidden" id="${id}" value="${val||''}"></div>`;
+}
+
+/* Picker para celdas de horas (reusa parser/estilo, escribe en HoursStore) */
+function buildHoursPicker(fecha,field){
+  const id=`h_${fecha}_${field}`.replace(/-/g,'');
+  const hidden=$('#'+id), btn=$('#'+id+'Btn');
+  openTimePicker(btn, hidden.value, v=>{ hidden.value=v; HoursStore.set(fecha,{[field]:v}); renderHours(); });
+}
+
+$('#prevMonth').onclick=()=>{hMonth--;if(hMonth<0){hMonth=11;hYear--;}renderHours();};
+$('#nextMonth').onclick=()=>{hMonth++;if(hMonth>11){hMonth=0;hYear++;}renderHours();};
+$('#hToday').onclick=()=>{hMonth=new Date().getMonth();hYear=new Date().getFullYear();renderHours();};
+$('#prevMonth2').onclick=()=>{hMonth--;if(hMonth<0){hMonth=11;hYear--;}renderHours();};
+$('#nextMonth2').onclick=()=>{hMonth++;if(hMonth>11){hMonth=0;hYear++;}renderHours();};
+$('#hToday2').onclick=()=>{hMonth=new Date().getMonth();hYear=new Date().getFullYear();renderHours();};
+
+/* ===== Exportar Excel de horas (réplica del archivo original) ===== */
+$('#hExportBtn').addEventListener('click',exportHoursExcel);
+
+async function exportHoursExcel(){
+  const ACC='FF0F6B4F',ACC2='FF13855F',SOFT='FFD7E9E0',GREEN='FFE2F0D9',GREY='FFEDEDED',
+        INK='FF10241F',MUT='FF6F6A5D',HEADBG='FF17375E',LABBG='FFC6EFCE',FERBG='FFFFC7CE',NABG='FFFFEB9C';
+  const wb=new ExcelJS.Workbook();
+  wb.creator='Registro de Infinity Corp';wb.created=new Date();
+  const thin={style:'thin',color:{argb:'FFD9D9D9'}};
+  const border={top:thin,left:thin,bottom:thin,right:thin};
+  const all=HoursStore.all();
+  const panelRows=[];
+
+  for(let m=0;m<12;m++){
+    const ws=wb.addWorksheet(`${MESES_FULL[m]}${hYear}`,{views:[{showGridLines:false}]});
+    ws.columns=[{width:3},{width:14},{width:13},{width:13},{width:13},{width:13},{width:9},{width:3},
+                {width:14},{width:13},{width:13},{width:13},{width:13},{width:9}];
+    // título
+    ws.mergeCells('B2:G2');const t=ws.getCell('B2');
+    t.value=`Control de Horas | ${MESES_FULL[m]} ${hYear}`;
+    t.font={name:'Archivo',size:16,bold:true,color:{argb:ACC}};
+    ws.mergeCells('B5:O5');ws.getCell('B5').value='Vista semanal en tarjetas. Estado, horario y total por día.';
+    ws.getCell('B5').font={name:'Archivo',size:10.5,color:{argb:MUT}};
+    const ndays=new Date(hYear,m+1,0).getDate();
+    let monthH=0,monthLab=0,monthFer=0,monthNA=0;
+    for(let d=1;d<=ndays;d++){
+      const fecha=`${hYear}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+      const rec=isBeforeStart(hYear,m,d)?{estado:''}:(all[fecha]||(isFutureDay(hYear,m,d)?{estado:''}:(()=>{const e=defaultEstado(hYear,m,d);return e==='Laborado'?{estado:e,...DEF_TIMES}:{estado:e};})()));
+      const wd=new Date(hYear,m,d).getDay();
+      const p=d-1, block=Math.floor(p/2), side=p%2;
+      const hdr=7+block*4, vrow=hdr+2;
+      const baseCol=side===0?2:9; // B or I
+      // date header
+      const dc=ws.getCell(vrow-2,baseCol);
+      dc.value=`${String(d).padStart(2,'0')}/${String(m+1).padStart(2,'0')}/${hYear} | ${DOW[wd]}`;
+      dc.font={name:'Archivo',size:11,bold:true,color:{argb:HEADBG}};
+      ws.mergeCells(vrow-2,baseCol,vrow-2,baseCol+4);
+      dc.fill={type:'pattern',pattern:'solid',fgColor:{argb:(wd===0||wd===6)?GREY:GREEN}};
+      // labels
+      const labels=['Estado','Entrada','Inicio almuerzo','Fin almuerzo','Salida','Horas'];
+      labels.forEach((lb,i)=>{const c=ws.getCell(vrow-1,baseCol+i);c.value=lb;
+        c.font={name:'Archivo',size:9.5,bold:true,color:{argb:MUT}};c.alignment={horizontal:'center'};});
+      // values
+      const h=dayHours(rec);
+      const vals=[rec.estado,
+        rec.estado==='Laborado'?(rec.ent?to12h(rec.ent):''):'',
+        rec.estado==='Laborado'?(rec.ai?to12h(rec.ai):''):'',
+        rec.estado==='Laborado'?(rec.af?to12h(rec.af):''):'',
+        rec.estado==='Laborado'?(rec.sal?to12h(rec.sal):''):'',
+        (rec.estado==='Laborado'&&h!=='')?h:''];
+      vals.forEach((v,i)=>{const c=ws.getCell(vrow,baseCol+i);c.value=v;
+        c.alignment={horizontal:'center'};c.border=border;
+        c.font={name:'Archivo',size:10.5,color:{argb:INK}};});
+      // estado color
+      const ec=ws.getCell(vrow,baseCol);
+      if(rec.estado==='Laborado')ec.fill={type:'pattern',pattern:'solid',fgColor:{argb:LABBG}};
+      else if(rec.estado==='FERIADO')ec.fill={type:'pattern',pattern:'solid',fgColor:{argb:FERBG}};
+      else ec.fill={type:'pattern',pattern:'solid',fgColor:{argb:NABG}};
+      ec.font={name:'Archivo',size:10.5,bold:true,color:{argb:INK}};
+      const hc=ws.getCell(vrow,baseCol+5);hc.numFmt='0.00';
+      hc.font={name:'Archivo',size:11,bold:true,color:{argb:ACC}};
+      if(rec.estado==='Laborado'){monthLab++;if(typeof h==='number')monthH+=h;}
+      else if(rec.estado==='FERIADO')monthFer++;else monthNA++;
+    }
+    // resumen del mes
+    const sumRow=7+Math.ceil(ndays/2)*4+2;
+    ws.getCell(sumRow,2).value='Resumen del mes';
+    ws.getCell(sumRow,2).font={name:'Archivo',size:13,bold:true,color:{argb:ACC}};
+    const items=[['Horas registradas',Math.round(monthH*100)/100],['Días laborados',monthLab],['Feriados',monthFer],['No aplica',monthNA]];
+    items.forEach((it,i)=>{
+      ws.getCell(sumRow+2+i,2).value=it[0];ws.getCell(sumRow+2+i,2).font={name:'Archivo',size:11,color:{argb:MUT}};
+      const c=ws.getCell(sumRow+2+i,3);c.value=it[1];c.font={name:'Archivo',size:11,bold:true,color:{argb:INK}};
+      if(i===0)c.numFmt='0.00';
+    });
+    panelRows.push([`${MESES_FULL[m].toUpperCase()}${hYear}`,Math.round(monthH*100)/100,monthLab,monthFer]);
+  }
+
+  /* Panel */
+  const ps=wb.addWorksheet('Panel',{views:[{showGridLines:false}]});
+  ps.columns=[{width:3},{width:20},{width:13},{width:14},{width:11}];
+  ps.mergeCells('B2:E2');const pt=ps.getCell('B2');
+  pt.value='Panel Ejecutivo de Horas';pt.font={name:'Archivo',size:16,bold:true,color:{argb:'FFFFFFFF'}};
+  pt.fill={type:'pattern',pattern:'solid',fgColor:{argb:ACC}};pt.alignment={indent:1,vertical:'middle'};ps.getRow(2).height=28;
+  const totalY=panelRows.reduce((s,r)=>s+r[1],0);
+  const mesesCon=panelRows.filter(r=>r[1]>0).length;
+  ps.getCell('B6').value='Horas totales';ps.getCell('B6').font={bold:true,color:{argb:MUT}};
+  ps.getCell('B7').value=Math.round(totalY*100)/100;ps.getCell('B7').font={size:14,bold:true,color:{argb:ACC}};ps.getCell('B7').numFmt='0.00';
+  ps.getCell('E6').value='Meses con datos';ps.getCell('E6').font={bold:true,color:{argb:MUT}};
+  ps.getCell('E7').value=mesesCon;ps.getCell('E7').font={size:14,bold:true,color:{argb:INK}};
+  const ph=['Mes','Horas','Días Hábiles','Feriados'];
+  ph.forEach((h,i)=>{const c=ps.getCell(10,2+i);c.value=h;c.font={bold:true,color:{argb:'FFFFFFFF'}};c.fill={type:'pattern',pattern:'solid',fgColor:{argb:ACC2}};c.alignment={horizontal:i===0?'left':'center'};});
+  panelRows.forEach((r,i)=>{const row=ps.getRow(11+i);
+    [r[0],r[1],r[2],r[3]].forEach((v,j)=>{const c=row.getCell(2+j);c.value=v;c.alignment={horizontal:j===0?'left':'center'};c.font={name:'Archivo',size:10.5,color:{argb:INK}};if(j===1)c.numFmt='0.00';if(i%2)c.fill={type:'pattern',pattern:'solid',fgColor:{argb:'FFF7F4ED'}};});
+  });
+
+  const buf=await wb.xlsx.writeBuffer();
+  const blob=new Blob([buf],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download=`Detalle_de_Horas_${hYear}.xlsx`;a.click();
+  toast('Excel de horas exportado');
+}
 </script>
 </body>
 </html>
