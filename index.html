@@ -8,6 +8,30 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Archivo:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
+<!-- Firebase Realtime Database (SDK modular vía CDN) -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getDatabase, ref, push, update, remove, onValue, get, child }
+    from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+  // === CONFIGURACIÓN DE TU PROYECTO FIREBASE ===
+  // Si cambias de proyecto, reemplaza estos valores por los de tu consola Firebase.
+  const firebaseConfig = {
+    apiKey: "AIzaSyB9vAgKWYHsJscMaR2tpsoME4Xgn72tBYs",
+    authDomain: "byc-registro-actividades.firebaseapp.com",
+    databaseURL: "https://byc-registro-actividades-default-rtdb.firebaseio.com",
+    projectId: "byc-registro-actividades",
+    storageBucket: "byc-registro-actividades.firebasestorage.app",
+    messagingSenderId: "341041616065",
+    appId: "1:341041616065:web:6089777aa74fbee9f97040"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+  // Exponer un puente mínimo para que el resto del código (no-módulo) use Firebase
+  window.FB = { db, ref, push, update, remove, onValue, get, child };
+  window.dispatchEvent(new Event('firebase-ready'));
+</script>
 <style>
   :root{
     --ink:#10241f; --paper:#f4f1ea; --card:#fbf9f4; --line:#dcd6c8;
@@ -33,6 +57,8 @@
   .brand h1 em{font-style:italic;color:var(--accent)}
   .status-dot{display:inline-flex;align-items:center;gap:8px;font-size:12.5px;color:var(--muted);font-weight:500}
   .status-dot::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--gold);box-shadow:0 0 0 4px rgba(192,138,45,.18)}
+  .status-dot[data-state="ok"]::before{background:var(--accent);box-shadow:0 0 0 4px rgba(15,107,79,.18)}
+  .status-dot[data-state="off"]::before{background:var(--red);box-shadow:0 0 0 4px rgba(180,69,47,.18)}
 
   .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin:24px 0 18px}
   /* period selector */
@@ -214,7 +240,7 @@
       <span class="eyebrow">Infinity Corp · TI</span>
       <h1>Registro de <em>Infinity Corp</em></h1>
     </div>
-    <span class="status-dot" id="srcStatus">Almacenamiento local (prototipo)</span>
+    <span class="status-dot" id="srcStatus">Conectando a Firebase…</span>
   </header>
 
   <nav class="tabs">
@@ -295,7 +321,7 @@
 
   <div class="datasrc">
     <span>🔌</span>
-    <div><b>Listo para Firebase.</b> Este prototipo guarda los datos en tu navegador. Toda la lectura/escritura pasa por la capa <code>DataStore</code> al inicio del código — al conectar Firestore solo se reemplaza esa capa y la app pasa a tiempo real para todo el equipo, sin tocar la interfaz.</div>
+    <div><b>Conectado a Firebase.</b> Los datos se guardan en la base de datos en tiempo real (proyecto <code>byc-registro-actividades</code>): cualquier persona del equipo que abra esta página ve los cambios al instante. Las actividades viven en el nodo <code>actividades</code> y el detalle de horas en <code>horas</code>.</div>
   </div>
   </div><!-- /tab-actividades -->
 
@@ -439,20 +465,33 @@
 <div class="toast" id="toast"></div>
 
 <script>
+/* ============================================================
+   DataStore — Actividades en Firebase Realtime Database (nodo "actividades")
+   Mantiene la misma interfaz (onChange/add/update/remove/all) para no
+   tocar el resto de la app. Tiempo real vía onValue.
+   ============================================================ */
 const DataStore = (() => {
-  const KEY='byc_actividades_v1'; let cache=[]; let listeners=[];
-  function load(){ try{cache=JSON.parse(localStorage.getItem(KEY))||[];}catch{cache=[];} }
-  function persist(){ localStorage.setItem(KEY,JSON.stringify(cache)); emit(); }
+  let cache=[]; let listeners=[]; let ready=false;
   function emit(){ listeners.forEach(fn=>fn([...cache])); }
-  load();
+  function start(){
+    const {db,ref,onValue}=window.FB;
+    onValue(ref(db,'actividades'), snap=>{
+      const val=snap.val()||{};
+      cache=Object.entries(val).map(([id,v])=>({id,...v}));
+      ready=true; emit();
+    });
+  }
+  if(window.FB) start();
+  else window.addEventListener('firebase-ready',start,{once:true});
   return {
-    onChange(fn){ listeners.push(fn); fn([...cache]); },
-    add(item){ item.id=crypto.randomUUID(); cache.push(item); persist(); },
-    update(id,patch){ const i=cache.findIndex(x=>x.id===id); if(i>-1){cache[i]={...cache[i],...patch}; persist();} },
-    remove(id){ cache=cache.filter(x=>x.id!==id); persist(); },
+    onChange(fn){ listeners.push(fn); if(ready) fn([...cache]); },
+    add(item){ const {db,ref,push}=window.FB; push(ref(db,'actividades'),item); },
+    update(id,patch){ const {db,ref,update}=window.FB; update(ref(db,'actividades/'+id),patch); },
+    remove(id){ const {db,ref,remove}=window.FB; remove(ref(db,'actividades/'+id)); },
     all(){ return [...cache]; }
   };
 })();
+
 
 const CONFIG={
   areas:['Soporte','Proyecto Tickets','Infraestructura','TI','Desarrollo'],
@@ -679,8 +718,25 @@ $('#applyRange').onclick=()=>{
   updatePeriodUI();render();
 };
 
+// Estado de conexión a Firebase (.info/connected)
+function watchConnection(){
+  const {db,ref,onValue}=window.FB;
+  onValue(ref(db,'.info/connected'),snap=>{
+    const dot=$('#srcStatus');
+    if(snap.val()===true){ dot.textContent='En línea · Firebase'; dot.style.setProperty('--state','ok'); dot.dataset.state='ok'; }
+    else{ dot.textContent='Sin conexión · reintentando…'; dot.dataset.state='off'; }
+  });
+}
+if(window.FB) watchConnection();
+else window.addEventListener('firebase-ready',watchConnection,{once:true});
+
 let current=[];
 DataStore.onChange(data=>{current=data;render();});
+// Sincronización en tiempo real del Detalle de Horas: re-render si la pestaña está visible
+HoursStore.onChange(()=>{
+  const horasVisible=$('#tab-horas').style.display!=='none'||$('#tab-dashhoras').style.display!=='none';
+  if(horasVisible) renderHours();
+});
 updatePeriodUI();
 $('#search').addEventListener('input',render);
 $('#filterArea').addEventListener('change',render);
@@ -993,17 +1049,29 @@ document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{
 /* ============================================================
    DETALLE DE HORAS
    ============================================================ */
+/* HoursStore — Detalle de Horas en Firebase Realtime Database (nodo "horas")
+   Clave = fecha (YYYY-MM-DD). Misma interfaz (onChange/get/set/all). */
 const HoursStore=(()=>{
-  const KEY='infinity_horas_v1'; let cache={}; let listeners=[];
-  function load(){try{cache=JSON.parse(localStorage.getItem(KEY))||{};}catch{cache={};}}
-  function persist(){localStorage.setItem(KEY,JSON.stringify(cache));emit();}
+  let cache={}; let listeners=[]; let ready=false;
   function emit(){listeners.forEach(fn=>fn({...cache}));}
-  load();
+  function start(){
+    const {db,ref,onValue}=window.FB;
+    onValue(ref(db,'horas'), snap=>{
+      cache=snap.val()||{};
+      ready=true; emit();
+    });
+  }
+  if(window.FB) start();
+  else window.addEventListener('firebase-ready',start,{once:true});
   return {
-    onChange(fn){listeners.push(fn);},
-    get(fecha){return cache[fecha]||null;},
-    set(fecha,data){cache[fecha]={...cache[fecha],...data};persist();},
-    all(){return {...cache};}
+    onChange(fn){ listeners.push(fn); if(ready) fn({...cache}); },
+    get(fecha){ return cache[fecha]||null; },
+    set(fecha,data){
+      const {db,ref,update}=window.FB;
+      cache[fecha]={...cache[fecha],...data}; // optimista para respuesta inmediata
+      update(ref(db,'horas/'+fecha),data);
+    },
+    all(){ return {...cache}; }
   };
 })();
 
