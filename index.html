@@ -264,14 +264,6 @@
             <button type="button" class="time-btn" id="inicioBtn" data-target="inicio"><span>Seleccionar…</span><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></button>
             <input type="hidden" id="inicio">
           </div>
-          <div class="field"><label>Inicio almuerzo <span style="text-transform:none;font-weight:400;color:#a8a290">(opcional)</span></label>
-            <button type="button" class="time-btn" id="almIniBtn" data-target="almIni"><span>Seleccionar…</span><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></button>
-            <input type="hidden" id="almIni">
-          </div>
-          <div class="field"><label>Fin almuerzo <span style="text-transform:none;font-weight:400;color:#a8a290">(opcional)</span></label>
-            <button type="button" class="time-btn" id="almFinBtn" data-target="almFin"><span>Seleccionar…</span><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></button>
-            <input type="hidden" id="almFin">
-          </div>
           <div class="field"><label>Hora fin</label>
             <button type="button" class="time-btn" id="finBtn" data-target="fin"><span>Seleccionar…</span><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></button>
             <input type="hidden" id="fin">
@@ -310,7 +302,7 @@
     <div class="tbl-scroll">
       <table>
         <thead><tr>
-          <th>Fecha</th><th>Inicio</th><th>Inicio alm.</th><th>Fin alm.</th><th>Fin</th><th>Dur.</th>
+          <th>Fecha</th><th>Inicio</th><th>Fin</th><th>Dur.</th>
           <th>Actividad</th><th>Área</th><th>Categoría</th><th>Estado</th><th></th>
         </tr></thead>
         <tbody id="tbody"></tbody>
@@ -626,24 +618,21 @@ function buildTimePicker(target){
 }
 $('#inicioBtn').addEventListener('click',()=>buildTimePicker('inicio'));
 $('#finBtn').addEventListener('click',()=>buildTimePicker('fin'));
-$('#almIniBtn').addEventListener('click',()=>buildTimePicker('almIni'));
-$('#almFinBtn').addEventListener('click',()=>buildTimePicker('almFin'));
-syncTimeBtn('inicio');syncTimeBtn('fin');syncTimeBtn('almIni');syncTimeBtn('almFin');
+syncTimeBtn('inicio');syncTimeBtn('fin');
 
 let editingId=null;
 function enterEdit(it){
   editingId=it.id;
   $('#fecha').value=it.fecha;$('#inicio').value=it.inicio;$('#fin').value=it.fin;
-  $('#almIni').value=it.almIni||'';$('#almFin').value=it.almFin||'';
-  syncTimeBtn('inicio');syncTimeBtn('fin');syncTimeBtn('almIni');syncTimeBtn('almFin');
+  syncTimeBtn('inicio');syncTimeBtn('fin');
   $('#actividad').value=it.actividad;$('#area').value=it.area;$('#categoria').value=it.categoria;$('#estado').value=it.estado;
   $('#submitBtn').textContent='Guardar cambios';$('#cancelEdit').style.display='inline-block';
   updateDurHint(); window.scrollTo({top:0,behavior:'smooth'});
 }
 function exitEdit(){
   editingId=null;$('#actForm').reset();$('#fecha').value=new Date().toISOString().slice(0,10);
-  $('#inicio').value='';$('#fin').value='';$('#almIni').value='';$('#almFin').value='';
-  syncTimeBtn('inicio');syncTimeBtn('fin');syncTimeBtn('almIni');syncTimeBtn('almFin');
+  $('#inicio').value='';$('#fin').value='';
+  syncTimeBtn('inicio');syncTimeBtn('fin');
   $('#submitBtn').textContent='Agregar actividad';$('#cancelEdit').style.display='none';$('#durHint').textContent='';
 }
 $('#cancelEdit').addEventListener('click',exitEdit);
@@ -659,12 +648,11 @@ $('#actForm').addEventListener('submit',e=>{
   const dur=durationHours($('#inicio').value,$('#fin').value);
   if(dur<=0){toast('Revisa las horas: la duración debe ser positiva');return;}
   const item={fecha:$('#fecha').value,inicio:$('#inicio').value,fin:$('#fin').value,duracion:dur,
-    almIni:$('#almIni').value,almFin:$('#almFin').value,
     actividad:$('#actividad').value.trim(),area:$('#area').value,categoria:$('#categoria').value,estado:$('#estado').value};
   if(editingId){DataStore.update(editingId,item);toast('Actividad actualizada');exitEdit();}
   else{DataStore.add(item);toast('Actividad agregada');
-    $('#actividad').value='';$('#inicio').value='';$('#fin').value='';$('#almIni').value='';$('#almFin').value='';
-    syncTimeBtn('inicio');syncTimeBtn('fin');syncTimeBtn('almIni');syncTimeBtn('almFin');$('#durHint').textContent='';}
+    $('#actividad').value='';$('#inicio').value='';$('#fin').value='';
+    syncTimeBtn('inicio');syncTimeBtn('fin');$('#durHint').textContent='';}
 });
 
 /* ===== PERÍODO (semana laboral L-V, navegación, rango) ===== */
@@ -776,8 +764,6 @@ function render(){
     tr.innerHTML=`
       <td class="num-cell">${fmtDate(r.fecha)}</td>
       <td class="num-cell">${to12h(r.inicio)}</td>
-      <td class="num-cell" style="color:var(--muted)">${r.almIni?to12h(r.almIni):'—'}</td>
-      <td class="num-cell" style="color:var(--muted)">${r.almFin?to12h(r.almFin):'—'}</td>
       <td class="num-cell">${to12h(r.fin)}</td>
       <td class="num-cell">${fmtH(r.duracion)}</td>
       <td class="act-text">${escapeHtml(r.actividad||'')}</td>
@@ -916,54 +902,49 @@ $('#exportBtn').addEventListener('click',async ()=>{
 
   /* ---------- Hoja ACTIVIDADES ---------- */
   const ws=wb.addWorksheet('Actividades',{views:[{state:'frozen',ySplit:4}]});
-  ws.columns=[{width:12},{width:12},{width:13},{width:13},{width:12},{width:11},{width:50},{width:18},{width:15},{width:13}];
+  ws.columns=[{width:12},{width:12},{width:12},{width:11},{width:52},{width:18},{width:15},{width:13}];
   // título
-  ws.mergeCells('A1:J1');const t=ws.getCell('A1');
+  ws.mergeCells('A1:H1');const t=ws.getCell('A1');
   t.value='Registro de Actividades';t.font={name:'Archivo',size:16,bold:true,color:{argb:'FFFFFFFF'}};
   t.alignment={vertical:'middle',horizontal:'left',indent:1};t.fill={type:'pattern',pattern:'solid',fgColor:{argb:ACC}};
   ws.getRow(1).height=30;
-  ws.mergeCells('A2:J2');const st=ws.getCell('A2');
+  ws.mergeCells('A2:H2');const st=ws.getCell('A2');
   st.value=`Período: ${L.main}${L.sub?'  ·  '+L.sub:''}`;st.font={name:'Archivo',size:10.5,color:{argb:MUT}};
   st.alignment={indent:1};ws.getRow(2).height=18;
   ws.getRow(3).height=6;
   // header
-  const heads=['Fecha','Hora inicio','Inicio almuerzo','Fin almuerzo','Hora fin','Duración (h)','Actividad','Área','Categoría','Estado'];
+  const heads=['Fecha','Hora inicio','Hora fin','Duración (h)','Actividad','Área','Categoría','Estado'];
   const hr=ws.getRow(4);
   heads.forEach((h,i)=>{const c=hr.getCell(i+1);c.value=h;
     c.font={name:'Archivo',size:11,bold:true,color:{argb:'FFFFFFFF'}};
     c.fill={type:'pattern',pattern:'solid',fgColor:{argb:ACC2}};
-    c.alignment={vertical:'middle',horizontal:i===6?'left':'center'};
+    c.alignment={vertical:'middle',horizontal:i===4?'left':'center'};
     c.border={bottom:{style:'thin',color:{argb:ACC}}};});
   hr.height=22;
   // data
   const data=[...periodSet].sort((a,b)=>(a.fecha+a.inicio).localeCompare(b.fecha+b.inicio));
   data.forEach((r,idx)=>{
-    const row=ws.addRow([fmtDate(r.fecha),to12h(r.inicio),
-      r.almIni?to12h(r.almIni):'',r.almFin?to12h(r.almFin):'',
-      to12h(r.fin),+r.duracion||0,
+    const row=ws.addRow([fmtDate(r.fecha),to12h(r.inicio),to12h(r.fin),+r.duracion||0,
       r.actividad||'',r.area||'',r.categoria||'',r.estado||'']);
     row.eachCell((c,col)=>{
       c.font={name:'Archivo',size:10.5,color:{argb:INK}};
-      c.alignment={vertical:'top',horizontal:col===7?'left':'center',wrapText:col===7};
+      c.alignment={vertical:'top',horizontal:col===5?'left':'center',wrapText:col===5};
       c.border={bottom:{style:'hair',color:{argb:'FFE0DCCF'}}};
       if(idx%2===1)c.fill={type:'pattern',pattern:'solid',fgColor:{argb:ALT}};
     });
-    row.getCell(6).numFmt='0.00';
-    // almuerzo en gris
-    row.getCell(3).font={name:'Archivo',size:10.5,color:{argb:MUT}};
-    row.getCell(4).font={name:'Archivo',size:10.5,color:{argb:MUT}};
+    row.getCell(4).numFmt='0.00';
     // estado color
-    const estCell=row.getCell(10);
+    const estCell=row.getCell(8);
     if(r.estado==='Completado')estCell.font={name:'Archivo',size:10.5,bold:true,color:{argb:ACC}};
     else if(r.estado==='Pendiente')estCell.font={name:'Archivo',size:10.5,bold:true,color:{argb:'FFB4452F'}};
   });
   // total row
   const totH=data.filter(r=>!CONFIG.noContabiliza.includes(r.categoria)).reduce((s,r)=>s+(+r.duracion||0),0);
-  const tot=ws.addRow(['','','','','TOTAL',Math.round(totH*100)/100,'(excluye almuerzo)','','','']);
-  tot.getCell(5).font={bold:true,color:{argb:INK}};tot.getCell(5).alignment={horizontal:'right'};
-  tot.getCell(6).font={bold:true,color:{argb:ACC}};tot.getCell(6).numFmt='0.00';
-  tot.getCell(7).font={italic:true,size:10,color:{argb:MUT}};
-  ws.autoFilter='A4:J4';
+  const tot=ws.addRow(['','','TOTAL',Math.round(totH*100)/100,'(excluye almuerzo)','','','']);
+  tot.getCell(3).font={bold:true,color:{argb:INK}};tot.getCell(3).alignment={horizontal:'right'};
+  tot.getCell(4).font={bold:true,color:{argb:ACC}};tot.getCell(4).numFmt='0.00';
+  tot.getCell(5).font={italic:true,size:10,color:{argb:MUT}};
+  ws.autoFilter='A4:H4';
 
   /* ---------- Datos agregados ---------- */
   const cat=sumBy(periodSet,'categoria','duracion');
